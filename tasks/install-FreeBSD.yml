@@ -1,0 +1,6 @@
+---
+
+- name: Install sensu-server
+  pkgng:
+    name: sensu-server
+    state: present
