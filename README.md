@@ -1,6 +1,6 @@
 # ansible-role-sensu-server
 
-A brief description of the role goes here.
+Configures `sense-server`.
 
 # Requirements
 
@@ -8,17 +8,55 @@ None
 
 # Role Variables
 
-| variable | description | default |
+| Variable | Description | Default |
 |----------|-------------|---------|
+| `sensu_server_user` | user name of `sensu-server` | `{{ __sensu_server_user }}` |
+| `sensu_server_group` | group name of `sensu-server` | `{{ __sensu_server_group }}` |
+| `sensu_server_service` | service name of `sensu-server` | `{{ __sensu_server_service }}` |
+| `sensu_server_config_dir` | path to configuration directory | `{{ __sensu_server_config_dir }}` |
+| `sensu_server_config_file` | path to `config.json` | `{{ sensu_server_config_dir }}/config.json` |
+| `sensu_server_conf_d_dir` | path to `conf.d` directory | `{{ sensu_server_config_dir }}/conf.d` |
+| `sensu_server_extensions_dir` | path to `extensions` directory | `{{ sensu_server_config_dir }}/extensions` |
+| `sensu_server_plugins_dir` | path to `plugins` directory | `{{ sensu_server_config_dir }}/plugins` |
+| `sensu_server_flags` | not used yet | `""` |
+| `sensu_server_config` | YAML representation of `config.json` | `{}` |
+| `sensu_server_config_fragments` | YAML representation of JSON files under `conf.d` | `{}` |
 
+
+## FreeBSD
+
+| Variable | Default |
+|----------|---------|
+| `__sensu_server_user` | `sensu` |
+| `__sensu_server_group` | `sensu` |
+| `__sensu_server_service` | `sensu-server` |
+| `__sensu_server_config_dir` | `/usr/local/etc/sensu` |
 
 # Dependencies
 
-None
+* reallyenglish.freebsd-repos (FreeBSD only)
 
 # Example Playbook
 
 ```yaml
+- hosts: localhost
+  roles:
+    - ansible-role-sensu-server
+  vars:
+    freebsd_repos:
+      sensu:
+        enabled: "true"
+        url: https://sensu.global.ssl.fastly.net/freebsd/FreeBSD:10:amd64/
+        mirror_type: srv
+        signature_type: none
+        priority: 100
+        state: present
+    sensu_server_config: {}
+    sensu_server_config_fragments:
+      transport:
+        transport:
+          name: rabbitmq
+          reconnect_on_error: True
 ```
 
 # License

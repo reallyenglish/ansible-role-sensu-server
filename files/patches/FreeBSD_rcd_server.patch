@@ -1,0 +1,24 @@
+--- sensu-server.orig	2017-07-04 04:23:04.713747000 +0000
++++ sensu-server	2017-07-04 04:24:02.760878000 +0000
+@@ -27,18 +27,18 @@
+ 
+ sensu_server_validate_config() {
+   echo "Validating sensu-server configuration"
+-  su -m $sensu_client_user -c "${command} validate server"
++  su -m $sensu_server_user -c "${command} validate server"
+   if [ $? != 0 ]; then
+     return 1
+   fi
+ }
+ 
+ start_precmd() {
+-  sensu_client_validate_config
++  sensu_server_validate_config
+ }
+ 
+ restart_precmd() {
+-  sensu_client_validate_config
++  sensu_server_validate_config
+ }
+ 
+ load_rc_config $name

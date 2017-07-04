@@ -1,8 +1,11 @@
-sensu-server_user: sensu-server
-sensu-server_group: sensu-server
-sensu-server_log_dir: /var/log/sensu-server
-sensu-server_db_dir: "{{ __sensu-server_db_dir }}"
-sensu-server_service: sensu-server
-sensu-server_conf_dir: "{{ __sensu-server_conf_dir }}"
-sensu-server_conf_file: "{{ __sensu-server_conf_dir }}/sensu-server.conf"
-sensu-server_flags: ""
+sensu_server_user: "{{ __sensu_server_user }}"
+sensu_server_group: "{{ __sensu_server_group }}"
+sensu_server_service: "{{ __sensu_server_service }}"
+sensu_server_config_dir: "{{ __sensu_server_config_dir }}"
+sensu_server_config_file: "{{ sensu_server_config_dir }}/config.json"
+sensu_server_conf_d_dir: "{{ sensu_server_config_dir }}/conf.d"
+sensu_server_extensions_dir: "{{ sensu_server_config_dir }}/extensions"
+sensu_server_plugins_dir: "{{ sensu_server_config_dir }}/plugins"
+sensu_server_flags: ""
+sensu_server_config: {}
+sensu_server_config_fragments: {}

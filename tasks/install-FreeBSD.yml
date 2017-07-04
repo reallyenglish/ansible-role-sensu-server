@@ -2,5 +2,12 @@
 
 - name: Install sensu-server
   pkgng:
-    name: sensu-server
+    name: sensu
     state: present
+
+- name: Patch sensu-server rc.d script
+  # XXX the latest one still has a bug. fixed in
+  # https://github.com/sensu/sensu-omnibus/commit/d6505ebb522f00d450d11f0a6ef7b0356c4d545c
+  patch:
+    src: files/patches/FreeBSD_rcd_server.patch
+    dest: /usr/local/etc/rc.d/sensu-server
