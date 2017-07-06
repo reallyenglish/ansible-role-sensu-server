@@ -1,0 +1,4 @@
+__sensu_server_user: sensu
+__sensu_server_group: sensu
+__sensu_server_service: sensu-server
+__sensu_server_config_dir: /etc/sensu

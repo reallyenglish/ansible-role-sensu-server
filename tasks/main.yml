@@ -8,16 +8,29 @@
 - name: Create sensu_server_conf_d_dir
   file:
     path: "{{ sensu_server_conf_d_dir }}"
+    owner: "{{ sensu_server_user }}"
+    group: "{{ sensu_server_group }}"
     state: directory
 
 - name: Create sensu_server_extensions_dir
   file:
     path: "{{ sensu_server_extensions_dir }}"
+    owner: "{{ sensu_server_user }}"
+    group: "{{ sensu_server_group }}"
     state: directory
 
 - name: Create sensu_server_plugins_dir
   file:
     path: "{{ sensu_server_plugins_dir }}"
+    owner: "{{ sensu_server_user }}"
+    group: "{{ sensu_server_group }}"
+    state: directory
+
+- name: Create sensu_server_log_dir
+  file:
+    path: "{{ sensu_server_log_dir }}"
+    owner: "{{ sensu_server_user }}"
+    group: "{{ sensu_server_group }}"
     state: directory
 
 - name: Create sensu_server_config_file

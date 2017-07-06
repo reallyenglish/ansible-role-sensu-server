@@ -1,0 +1,39 @@
+---
+
+- name: Install sensu-server
+  gem:
+    name: sensu
+    user_install: no
+    state: present
+
+- name: Get ruby version
+  command: "ruby -e 'puts RUBY_VERSION'"
+  register: register_sensu_server_ruby_version
+  changed_when: false
+  always_run: yes
+
+- set_fact:
+    sensu_server_ruby_version: "{{ register_sensu_server_ruby_version.stdout.split('.') }}"
+
+- set_fact:
+    sensu_server_ruby_postfix: "{{ sensu_server_ruby_version[0] }}{{ sensu_server_ruby_version[1] }}"
+
+- name: Create rc for sensu-server
+  template:
+    src: OpenBSD.rc.j2
+    dest: /etc/rc.d/sensu_server
+    mode: 0555
+
+- name: Create sensu_server_group
+  group:
+    name: "{{ sensu_server_group }}"
+    state: present
+
+- name: Create sensu_server_user
+  user:
+    comment: sensu-server Daemon
+    createhome: no
+    group: "{{ sensu_server_group }}"
+    name: "{{ sensu_server_user }}"
+    shell: /sbin/nologin
+    state: present

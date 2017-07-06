@@ -1,0 +1,6 @@
+---
+
+- name: Install sensu-server
+  apt:
+    name: sensu
+    state: present

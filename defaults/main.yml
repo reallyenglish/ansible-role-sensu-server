@@ -6,6 +6,7 @@ sensu_server_config_file: "{{ sensu_server_config_dir }}/config.json"
 sensu_server_conf_d_dir: "{{ sensu_server_config_dir }}/conf.d"
 sensu_server_extensions_dir: "{{ sensu_server_config_dir }}/extensions"
 sensu_server_plugins_dir: "{{ sensu_server_config_dir }}/plugins"
+sensu_server_log_dir: /var/log/sensu
 sensu_server_flags: ""
 sensu_server_config: {}
 sensu_server_config_fragments: {}
