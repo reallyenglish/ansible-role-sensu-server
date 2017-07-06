@@ -11,6 +11,11 @@ group   = "sensu"
 ports   = []
 default_user = "root"
 default_group = "root"
+gem_binary = "/opt/sensu/embedded/bin/gem"
+plugins = [
+  "sensu-plugins-disk-checks",
+  "sensu-plugins-load-checks"
+]
 
 case os[:family]
 when "openbsd"
@@ -18,6 +23,7 @@ when "openbsd"
   group = "_sensu"
   default_group = "wheel"
   service = "sensu_server"
+  gem_binary = "gem"
 when "freebsd"
   config_dir = "/usr/local/etc/sensu"
   default_group = "wheel"
@@ -94,6 +100,14 @@ describe file("#{config_dir}/conf.d/transport.json") do
   it { should be_grouped_into default_group }
   its(:content_as_json) { should include("transport" => include("name" => "rabbitmq")) }
   its(:content_as_json) { should include("transport" => include("reconnect_on_error" => true)) }
+end
+
+plugins.each do |p|
+  describe command("#{gem_binary} list #{p} -q | cut -d' ' -f1") do
+    its(:exit_status) { should eq 0 }
+    its(:stderr) { should eq "" }
+    its(:stdout) { should match(/^#{Regexp.escape(p)}$/) }
+  end
 end
 
 describe service(service) do

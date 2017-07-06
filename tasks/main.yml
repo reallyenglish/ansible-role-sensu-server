@@ -48,6 +48,8 @@
   with_items: "{{ sensu_server_config_fragments.keys() }}"
   notify: Restart sensu-server
 
+- include: plugins.yml
+
 - name: Start sensu-server
   service:
     name: "{{ sensu_server_service }}"
