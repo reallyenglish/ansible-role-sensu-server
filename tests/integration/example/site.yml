@@ -1,2 +1,2 @@
-- include: server.yml
 - include: client.yml
+- include: sensu.yml

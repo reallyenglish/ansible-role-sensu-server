@@ -13,3 +13,29 @@
     repository: "{{ item.repository | default('') }}"
     user_install: no
   with_items: "{{ sensu_server_gems }}"
+# XXX ansible `gem` module does not have an option to use `--bindir`. when gem
+# is one bundled in the official package, binaries are installed in correct
+# `bindir`. but when system's `gem` is used, they are installed in gem's
+# directory not in $PATH
+# https://github.com/ansible/ansible-modules-core/issues/2911
+# https://github.com/ansible/ansible/issues/25142
+- name: Get plug-ins' binaries
+  shell: "{{ sensu_server_gem_binary }} content {{ sensu_server_gems | selectattr('state', 'match', '^present$') | map(attribute = 'name') | list | join(' ') }} | grep -E '/bin/[^\\]+'"
+  changed_when: false
+  register: register_sensu_server_plugins_binaries
+  when:
+    - "sensu_server_gem_binary == 'gem'"
+
+- name: Create symlinks
+  file:
+    path: "/usr/local/bin/{{ item | basename }}"
+    src: "{{ item }}"
+    state: link
+  # XXX the following `with_items` should work but some ansible versions
+  # evaluate `register_sensu_server_plugins_binaries.stdout_lines` before evaluating
+  # `when` condition, resulting `'dict object' has no attribute 'stdout_lines'`
+  # error.
+  # with_items: "{{ register_sensu_server_plugins_binaries.stdout_lines }}"
+  with_items: "{{ register_sensu_server_plugins_binaries.stdout_lines | default([]) }}"
+  when:
+    - "sensu_server_gem_binary == 'gem'"

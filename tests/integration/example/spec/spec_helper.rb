@@ -34,8 +34,8 @@ Infrataster::Server.define(
   vagrant: true
 )
 Infrataster::Server.define(
-  :server1,
-  "192.168.21.200",
+  :sensu1,
+  "192.168.21.202",
   vagrant: true
 )
 

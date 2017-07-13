@@ -11,3 +11,14 @@
   patch:
     src: files/patches/FreeBSD_rcd_server.patch
     dest: /usr/local/etc/rc.d/sensu-server
+
+- name: Get the path to "lib/sensu/transport/rabbitmq.rb"
+  shell: "{{ sensu_server_gem_binary }} content sensu-transport | grep 'lib/sensu/transport/rabbitmq.rb$'"
+  register: register_gem_content_sensu_transport
+  changed_when: false
+
+- name: Patch sensu-transport
+  patch:
+    # XXX workaround https://github.com/reallyenglish/ansible-role-sensu-client/issues/8
+    src: files/patches/FreeBSD_undefined_method_for_nilclass.patch
+    dest: "{{ register_gem_content_sensu_transport.stdout }}"

@@ -1,0 +1,18 @@
+---
+
+- name: reallyenglish.freebsd-repos
+- name: reallyenglish.language-ruby
+- name: reallyenglish.redis
+- name: reallyenglish.rabbitmq
+  scm: git
+  src: https://github.com/reallyenglish/ansible-role-rabbitmq
+  version: create_vhost_first
+- name: reallyenglish.sensu-api
+- name: reallyenglish.sensu-client
+  scm: git
+  src: https://github.com/reallyenglish/ansible-role-sensu-client.git
+  version: patch_sensu_client
+- name: reallyenglish.redhat-repo
+- name: reallyenglish.uchiwa
+  scm: git
+  src: https://github.com/reallyenglish/ansible-role-uchiwa.git

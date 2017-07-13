@@ -1,0 +1,133 @@
+---
+- hosts: sensu
+  become: yes
+  become_method: sudo
+  environment:
+    http_proxy: "{{ http_proxy | default() }}"
+    https_proxy: "{{ https_proxy | default() }}"
+    no_proxy: "{{ no_proxy | default() }}"
+  roles:
+    - name: reallyenglish.freebsd-repos
+      when: ansible_os_family == 'FreeBSD'
+    - reallyenglish.redis
+    - reallyenglish.rabbitmq
+    - reallyenglish.sensu-api
+    - reallyenglish.sensu-client
+    - ansible-role-sensu-server
+    - reallyenglish.uchiwa
+  vars:
+    # uchiwa
+    uchiwa_config:
+      sensu:
+        - name: "Site 1"
+          host: localhost
+          port: 4567
+      uchiwa:
+        host: 0.0.0.0
+        port: 3000
+        users:
+          - username: admin
+            password: password
+            accessToken: vFzX6rFDAn3G9ieuZ4ZhN-XrfdRow4Hd5CXXOUZ5NsTw4h3k3l4jAw__
+            readonly: false
+    # redis
+    redis_config:
+      databases: 17
+      save 900: 1
+      protected-mode: "no"
+      requirepass: password
+
+    # rabbitmq
+    rabbitmq_cookie: ABCDEFGHIJK
+    rabbitmq_management_user:
+      name: rabbit
+      password: password
+    rabbitmq_vhosts:
+      - /sensu
+    rabbitmq_users:
+      - name: guest
+        state: absent
+      - name: root
+        password: password
+        state: present
+        vhost: /
+        tags: administrator
+      - name: sensu
+        password: password
+        state: present
+        permissions:
+          - vhost: /sensu
+            configure_priv: .*
+            read_priv: .*
+            write_priv: .*
+    rabbitmq_config: |
+      [
+        {rabbit,
+         [
+          {tcp_listeners, [5672] },
+          {log_levels, [{connection, info}]},
+          {vm_memory_high_watermark, 0.4},
+          {vm_memory_high_watermark_paging_ratio, 0.5},
+          {disk_free_limit, "50MB"}
+         ]
+        }
+      ].
+    sensu_common:
+      rabbitmq:
+        rabbitmq:
+          host: 127.0.0.1
+          port: 5672
+          vhost: /sensu
+          user: sensu
+          password: password
+      transport:
+        transport:
+          name: rabbitmq
+          reconnect_on_error: true
+
+    # sensu-client
+    sensu_client_gem_binary: /opt/sensu/embedded/bin/gem
+    sensu_client_config_fragments:
+      client:
+        client:
+          name: "{{ ansible_fqdn }}"
+          address: "{{ ansible_em1.ipv4[0].address }}"
+          subscriptions:
+            - production
+      rabbitmq: "{{ sensu_common.rabbitmq }}"
+      transport: "{{ sensu_common.transport }}"
+
+    # sensu-server
+    freebsd_repos:
+      sensu:
+        enabled: "true"
+        url: https://sensu.global.ssl.fastly.net/freebsd/FreeBSD:10:amd64/
+        mirror_type: srv
+        signature_type: none
+        priority: 100
+        state: present
+    sensu_server_gem_binary: /opt/sensu/embedded/bin/gem
+    sensu_server_gems:
+      - name: sensu-plugins-load-checks
+        state: present
+    sensu_server_config: {}
+    sensu_server_config_fragments:
+      redis:
+        redis:
+          host: 127.0.0.1
+          port: 6379
+          password: password
+      rabbitmq: "{{ sensu_common.rabbitmq }}"
+      transport: "{{ sensu_common.transport }}"
+      api:
+        api:
+          host: localhost
+          bind: 0.0.0.0
+          port: 4567
+      checks:
+        checks:
+          load:
+            command: check-load.rb
+            subscribers:
+              - production
+            interval: 10

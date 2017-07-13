@@ -10,3 +10,4 @@ sensu_server_log_dir: /var/log/sensu
 sensu_server_flags: ""
 sensu_server_config: {}
 sensu_server_config_fragments: {}
+sensu_server_gem_binary: gem
