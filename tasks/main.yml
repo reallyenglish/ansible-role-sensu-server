@@ -38,7 +38,7 @@
     src: config.json.j2
     dest: "{{ sensu_server_config_file }}"
     validate: "python -c 'import sys; import json; json.loads(open(sys.argv[1]).read())' %s"
-  notify: Restart sensu-server
+  notify: Restart sensu services
 
 - name: Create json files
   template:
@@ -46,7 +46,7 @@
     dest: "{{ sensu_server_conf_d_dir }}/{{ item }}.json"
     validate: "python -c 'import sys; import json; json.loads(open(sys.argv[1]).read())' %s"
   with_items: "{{ sensu_server_config_fragments.keys() }}"
-  notify: Restart sensu-server
+  notify: Restart sensu services
 
 - include: plugins.yml
 

@@ -23,6 +23,7 @@
     src: OpenBSD.rc.j2
     dest: /etc/rc.d/sensu_server
     mode: 0555
+    validate: sh -n %s
 
 - name: Create sensu_server_group
   group:
